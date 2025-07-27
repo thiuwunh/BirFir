@@ -1,0 +1,57 @@
+.article-page {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #f1f1f1;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 40px;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.add-topic {
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.main-contents {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-article-btn {
+  padding: 8px 12px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.add-article-btn:hover {
+  background-color: #0056b3;
+}

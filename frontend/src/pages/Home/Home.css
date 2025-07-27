@@ -1,0 +1,22 @@
+/* Add custom styles for Home page here if needed */
+
+.home-select-row {
+  gap: 16px;
+}
+
+.home-team-row {
+  justify-content: center;
+}
+
+.home-team-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 12px;
+  border: 2px solid #646cff;
+}
+
+.home-vip-container {
+  background: #f5f5f5;
+}

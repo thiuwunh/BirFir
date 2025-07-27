@@ -1,0 +1,14 @@
+/* Add custom styles for VIP page here if needed */
+
+.vip-center {
+  text-align: center;
+}
+
+.vip-img-wrapper {
+  margin-top: 24px;
+}
+
+.vip-img {
+  width: 180px;
+  border-radius: 12px;
+}

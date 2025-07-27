@@ -1,0 +1,40 @@
+/* Add custom styles for Studienkolleg page here if needed */
+
+.studienkolleg-filter-row {
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.studienkolleg-list {
+  gap: 24px;
+}
+
+.studienkolleg-card {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.studienkolleg-img {
+  width: 120px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.studienkolleg-name {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.studienkolleg-info {
+  font-size: 14px;
+  color: #555;
+}
+
+.studienkolleg-meta {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}

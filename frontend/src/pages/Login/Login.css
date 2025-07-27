@@ -1,0 +1,10 @@
+/* Add custom styles for Login page here if needed */
+
+.login-container {
+  max-width: 400px;
+}
+
+.login-tabs {
+  justify-content: center;
+  margin-bottom: 24px;
+}
