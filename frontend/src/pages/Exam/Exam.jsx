@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { StoreContext } from '../../contexts/StoreContext';
 import ReactQuill from 'react-quill-new';
@@ -18,6 +18,7 @@ export default function Exam() {
   const { url, topics, setTopics, fetchTopics } = useContext(StoreContext);
   const validLevel = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   const { level } = useParams();
+  const reactQuillRef = useRef(null);
 
   // ✅ Fetch topics từ backend bằng axios
 
@@ -84,7 +85,6 @@ export default function Exam() {
   };
 
   const selectedTopic = topics.find(t => t.id === selectedTopicId);
-  console.log(selectedTopic);
 
   return (
     <div className="article-page">
@@ -101,18 +101,18 @@ export default function Exam() {
                     value={renameValue}
                     onChange={(e) => setRenameValue(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleRenameTopic(topic.id)}
-                    />
+                  />
                   <button onClick={() => handleRenameTopic(topic.id)}>Lưu</button>
                 </>
               ) : (
                 <>
                   <span
-                    onClick={() => {setSelectedTopicId(topic.id), setContext(topic.context)}}
+                    onClick={() => { setSelectedTopicId(topic.id), setContext(topic.context) }}
                     style={{ cursor: 'pointer' }}
                   >
                     {topic.topic_name}
                   </span>
-                  
+
                   <button onClick={() => {
                     setRenamingId(topic.id);
                     setRenameValue(topic.topic_name);
@@ -142,14 +142,14 @@ export default function Exam() {
               <h3>Thông tin chi tiết</h3>
               <p><strong>Date:</strong> {selectedTopic.date}</p>
               <p><strong>Level:</strong> {selectedTopic.topic_level}</p>
-              
+
               {editTitle ? (
                 <>
                   <input
                     value={renameValue}
                     onChange={(e) => setRenameValue(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleRenameTitle(selectedTopic.id)}
-                    />
+                  />
                   <button onClick={() => handleRenameTitle(selectedTopic.id)}>Lưu</button>
                 </>
               ) : (
@@ -161,21 +161,86 @@ export default function Exam() {
                   }}>✎</button>
                 </>
               )}
-              <br/>
-              <br/>
+              <br />
+              <br />
               <button onClick={() => setEditorContent(!editorContent)}>Sửa nội dung</button>
               {editorContent ? (
                 <>
                   <ReactQuill
+                    ref={reactQuillRef}
                     theme="snow"
+                    placeholder="Start writing..."
+                    modules={{
+                      toolbar: {
+                        container: [
+                          [{ header: "1" }, { header: "2" }, { font: [] }],
+                          [{ size: [] }],
+                          ["bold", "italic", "underline", "strike", "blockquote"],
+                          [
+                            { list: "ordered" },
+                            { list: "bullet" },
+                            { indent: "-1" },
+                            { indent: "+1" },
+                          ],
+                          ["link", "image", "video"],
+                          ["code-block"],
+                          ["clean"],
+                        ],
+                        handlers: {
+                          image: () => {
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'file');
+                            input.setAttribute('accept', 'image/*');
+                            input.onchange = async () => {
+                              const file = input.files[0];
+                              if (file) {
+                                const formData = new FormData();
+                                formData.append('image', file);
+                                try {
+                                  const response = await axios.post(`${url}/api/topics/uploads`, formData, {
+                                    headers: { 'Content-Type': 'multipart/form-data' }
+                                  });
+                                  const imgUrl = response.data.url;
+                                  const quill = reactQuillRef.current.getEditor();
+                                  const range = quill.getSelection();
+                                  quill.insertEmbed(range.index, 'image', imgUrl);
+                                } catch (error) {
+                                  console.error('Error uploading image:', error);
+                                }
+                              }
+                            };
+                            input.click();
+                          }
+                        }
+                      },
+                      clipboard: {
+                        matchVisual: false,
+                      },
+                    }}
+                    formats={[
+                      "header",
+                      "font",
+                      "size",
+                      "bold",
+                      "italic",
+                      "underline",
+                      "strike",
+                      "blockquote",
+                      "list",
+                      "bullet",
+                      "indent",
+                      "link",
+                      "image",
+                      "video",
+                      "code-block",
+                    ]}
                     value={context}
                     onChange={setContext}
-                    placeholder="Nhập nội dung ở đây..."
                   />
                   <button onClick={() => handleEditContext(selectedTopic.id)}>Lưu</button>
                   <button onClick={() => setEditorContent(false)}>Hủy</button>
                 </>
-                
+
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: selectedTopic.context }} />
               )}

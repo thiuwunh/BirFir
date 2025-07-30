@@ -8,7 +8,7 @@ export const topicTable = async () => {
             topic_level ENUM('A1', 'A2', 'B1', 'B2', 'C1', 'C2') DEFAULT 'A1',
             date DATETIME DEFAULT CURRENT_TIMESTAMP,
             title VARCHAR(255) NOT NULL,
-            context MEDIUMTEXT NOT NULL
+            context LONGTEXT NOT NULL
         )
     `;
 

@@ -10,7 +10,20 @@ export const addTopic = async (req, res) => {
     }
 
     try {
-        let newContext = sanitizeHtml(context);
+        let newContext = sanitizeHtml(context, 
+            {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'video', 'code']),
+                allowedAttributes: {
+                    ...sanitizeHtml.defaults.allowedAttributes,
+                    img: ['src', 'alt'],
+                    video: ['src', 'controls'],
+                    code: ['class']
+                },
+                allowedSchemes: ['http', 'https', 'data'],
+                allowedSchemesAppliedToAttributes: ['src']
+            }
+        );
+
         const [result] = await connection.query(
             'INSERT INTO topics (topic_name, topic_level, title, context) VALUES (?, ?, ?, ?)',
             [topic_name, topic_level, title, newContext]
@@ -89,13 +102,25 @@ export const editTitle = async (req, res) => {
 
 export const editContext = async (req, res) => {
     const { id, newContext } = req.body;
-
     if (!id || !newContext) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
-
+    
     try {
-        let sanitizedContext = sanitizeHtml(newContext);
+        let sanitizedContext = sanitizeHtml(newContext, 
+            {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'video', 'code']),
+                allowedAttributes: {
+                    ...sanitizeHtml.defaults.allowedAttributes,
+                    img: ['src', 'alt'],
+                    video: ['src', 'controls'],
+                    code: ['class']
+                },
+                allowedSchemes: ['http', 'https', 'data'],
+                allowedSchemesAppliedToAttributes: ['src']
+            }
+        );
+
         const [result] = await connection.query('UPDATE topics SET context = ? WHERE id = ?', [sanitizedContext, id]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, message: 'Topic not found' });
@@ -103,6 +128,23 @@ export const editContext = async (req, res) => {
         res.status(200).json({ success: true, message: 'Context updated successfully' });
     } catch (error) {
         console.error('Error updating context:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const uploadPicture = async (req, res) => {
+
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    let image_filename = `${req.file.filename}`;
+
+    try {
+        const imageUrl = `http://localhost:4000/uploads/${image_filename}`;
+        res.status(200).json({ success: true, url: imageUrl });
+    } catch (error) {
+        console.error('Error uploading picture:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
